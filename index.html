@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milk Business Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Milk Business Management</h1>
+        <nav>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="nav-list">
+                <li><a href="#stockEntry">Daily Stock Entry</a></li>
+                <li><a href="#stockTable">Available Stock</a></li>
+                <li><a href="#historyContainer">History</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="stockEntry" class="inventory-section">
+        <h2>Daily Stock Entry</h2>
+        <form id="stockEntryForm">
+            <div class="form-group">
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" required>
+            </div>
+            <div class="form-group">
+                <label for="itemQuantity">Quantity Received:</label>
+                <input type="number" id="itemQuantity" required>
+            </div>
+            <button type="submit">Add to Inventory</button>
+        </form>
+    </section>
+    
+    <section id="stockTable" class="inventory-section">
+        <h2>Available Stock</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Available Stock</th>
+                    <th>Previous Day Stock</th>
+                    <th>Sell</th>
+                </tr>
+            </thead>
+            <tbody id="stockBody">
+                <!-- Dynamic content -->
+            </tbody>
+        </table>
+    </section>
+    
+    <section id="historyContainer" class="history-section">
+        <h2>History</h2>
+        <div id="historyContent">
+            <!-- Dynamic content -->
+        </div>
+        <button id="deleteHistory">Delete Selected History</button>
+        <button id="shareHistory">Share Selected History</button>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
