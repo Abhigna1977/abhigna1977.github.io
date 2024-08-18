@@ -40,6 +40,10 @@ function addStock() {
 
     localStorage.setItem(STOCK_KEY, JSON.stringify(stockData));
     loadStock();
+
+    // Clear form fields
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemQuantity').value = '';
 }
 
 // Function to load stock data from LocalStorage and display it
@@ -68,7 +72,7 @@ function loadStock() {
 function sellItem(itemName) {
     const stockData = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
     if (stockData[itemName]) {
-        const input = prompt(Enter the customer's name and quantity to sell (format: "Name, Quantity"):, 'CustomerName, 0');
+        const input = prompt(`Enter the customer's name and quantity to sell (format: "Name, Quantity"):`, 'CustomerName, 0');
 
         if (input) {
             const [customerName, sellQuantity] = input.split(',').map(item => item.trim());
@@ -90,6 +94,3 @@ function sellItem(itemName) {
         }
     }
 }
-
-// Function to add sales to history with customer name
-function addToHistory(itemName, customer
