@@ -1,6 +1,7 @@
 // Local Storage keys
 const STOCK_KEY = 'stockData';
 const HISTORY_KEY = 'historyData';
+let currentItemToSell = null;
 
 // Load initial data
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     menuToggle.addEventListener('click', () => {
         navList.classList.toggle('show');
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('sellModal');
+    const span = document.getElementsByClassName('close')[0];
+    const sellForm = document.getElementById('sellForm');
+
+    span.onclick = () => {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    sellForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        sellItem(currentItemToSell);
+        modal.style.display = 'none';
     });
 });
 
@@ -61,36 +83,72 @@ function loadStock() {
                 <td>${itemName}</td>
                 <td>${availableStock}</td>
                 <td>${stockData[itemName].previousStock}</td>
-                <td><button onclick="sellItem('${itemName}')">Sell</button></td>
+                <td><button onclick="openSellModal('${itemName}')">Sell</button></td>
             `;
             stockBody.appendChild(row);
         }
     });
 }
 
+// Function to open the modal to sell items
+function openSellModal(itemName) {
+    currentItemToSell = itemName;
+    const modal = document.getElementById('sellModal');
+    modal.style.display = 'block';
+}
+
 // Function to handle selling of items with customer name
 function sellItem(itemName) {
     const stockData = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
     if (stockData[itemName]) {
-        const input = prompt(`Enter the customer's name and quantity to sell (format: "Name, Quantity"):`, 'CustomerName, 0');
+        const customerName = document.getElementById('customerName').value.trim();
+        const sellQuantity = parseInt(document.getElementById('sellQuantity').value, 10);
 
-        if (input) {
-            const [customerName, sellQuantity] = input.split(',').map(item => item.trim());
-            const quantity = parseInt(sellQuantity, 10);
-
-            if (quantity > 0) {
-                if (quantity <= stockData[itemName].todayStock) {
-                    stockData[itemName].todayStock -= quantity;
-                } else {
-                    let remainingSellQuantity = quantity - stockData[itemName].todayStock;
-                    stockData[itemName].todayStock = 0;
-                    stockData[itemName].previousStock = Math.max(stockData[itemName].previousStock - remainingSellQuantity, 0);
-                }
-
-                localStorage.setItem(STOCK_KEY, JSON.stringify(stockData));
-                addToHistory(itemName, customerName, quantity);
-                loadStock();
+        if (sellQuantity > 0) {
+            if (sellQuantity <= stockData[itemName].todayStock) {
+                stockData[itemName].todayStock -= sellQuantity;
+            } else {
+                let remainingSellQuantity = sellQuantity - stockData[itemName].todayStock;
+                stockData[itemName].todayStock = 0;
+                stockData[itemName].previousStock = Math.max(stockData[itemName].previousStock - remainingSellQuantity, 0);
             }
+
+            localStorage.setItem(STOCK_KEY, JSON.stringify(stockData));
+            addToHistory(itemName, customerName, sellQuantity);
+            loadStock();
         }
     }
 }
+
+// Function to add sales to history with customer name
+function addToHistory(itemName, customerName, quantity) {
+    let historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    const timestamp = new Date().toLocaleString();
+    historyData.push({ itemName, customerName, quantity, timestamp });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+    loadHistory();
+}
+
+// Function to load history data from LocalStorage and display it
+function loadHistory() {
+    const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    const historyContent = document.getElementById('historyContent');
+    historyContent.innerHTML = '';
+
+    historyData.forEach((entry, index) => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+            <strong>${entry.timestamp}</strong>: ${entry.customerName} bought ${entry.quantity} of ${entry.itemName}
+            <button onclick="deleteHistory(${index})" class="delete">Delete</button>
+        `;
+        historyContent.appendChild(div);
+    });
+}
+
+// Function to delete a history entry
+function deleteHistory(index) {
+    let historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    historyData.splice(index, 1);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+    loadHistory();
