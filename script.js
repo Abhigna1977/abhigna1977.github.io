@@ -115,7 +115,7 @@ function sellItem(itemName) {
 
             localStorage.setItem(STOCK_KEY, JSON.stringify(stockData));
             addToHistory(itemName, customerName, sellQuantity);
-            loadStock();
+            loadStock(); // Update stock after selling
         }
     }
 }
@@ -126,7 +126,7 @@ function addToHistory(itemName, customerName, quantity) {
     const timestamp = new Date().toLocaleString();
     historyData.push({ itemName, customerName, quantity, timestamp });
     localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
-    loadHistory();
+    loadHistory(); // Update history after selling
 }
 
 // Function to load history data from LocalStorage and display it
@@ -152,3 +152,4 @@ function deleteHistory(index) {
     historyData.splice(index, 1);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
     loadHistory();
+}
